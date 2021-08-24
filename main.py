@@ -1,49 +1,51 @@
-import time
-
-import pygame, sys, random, tmp
+import pygame, sys, array_logic, time
 
 pygame.init()
 
-win = pygame.display.set_mode((800, 800))
-WHITE =(255, 255, 255)
-squares =[]
+size = 80
+edge = size*10
+win = pygame.display.set_mode((edge, edge))
+speed = 0
 
-clock=pygame.time.Clock()
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+clock = pygame.time.Clock()
+
+cells = array_logic.create_array(size)
+array_logic.fill_random_cells(cells, size)
 
 while True:
-    win.fill((0, 0, 0))
+    win.fill(WHITE)
     clock.tick(60)
-    c1 = random.randint(0,255)
-    c2 = random.randint(0, 255)
-    c3 = random.randint(0, 255)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+        #experimental features
         if event.type == pygame.MOUSEBUTTONDOWN:
-            squares.clear()
-            x,y = pygame.mouse.get_pos()
-            x =(x//10)*10
-            y =(y//10)*10
-            #squares.append([win,WHITE,(x,y,20,20)])
+            x, y = pygame.mouse.get_pos()
+            x = (x // 10)# * 10
+            y = (y // 10)# * 10
+            cells[x][y] = 1
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s:
+                cells = array_logic.create_array(size)
+            if event.key == pygame.K_d:
+                array_logic.fill_random_cells(cells, size)
+            if event.key == pygame.K_1:
+                speed = 0
+            if event.key == pygame.K_2:
+                speed = 1
+        #'''
+    for i in range(0, edge, 10):
+        pygame.draw.line(win, BLACK, (0, i), (edge, i), 2)
+        pygame.draw.line(win, BLACK, (i, 0), (i, edge), 2)
 
-    for i in range(10, 800, 10):
-        pygame.draw.line(win, WHITE,(0, i),(800, i), 2)
-        pygame.draw.line(win, WHITE,(i, 0),(i, 800), 2)
-        #squares.append([win,(c1,c2,c3),(random.randrange(22,780,20),random.randrange(22,780,20),18,18)])
+    for i in range(size):
+        for j in range(size):
+            if cells[i][j] == 1:
+                pygame.draw.rect(win, BLACK, (i * 10 + 2, j * 10 + 2, 8, 8))
 
-#pygame.draw.rect(win,WHITE,(random.randrange(20,480,20),random.randrange(20,480,20),20,20))
-    #for i in squares:
-        #pygame.draw.rect(*i)
-    for i in range(tmp.size):
-        for j in range(tmp.size):
-            if tmp.cells[i][j] == 1:
-                pygame.draw.rect(win,WHITE,(i*10+2,j*10+2,8,8))
-            #else:
-                #print(pygame.draw.rect(win, (120,0,0), (i * 20, j * 20, 18, 18)))
-
-    tmp.draw()
-
-#time.sleep(1)
+    array_logic.array_update(cells, size)
     pygame.display.update()
-    #time.sleep(0.2)
-    #print(tmp.cells)
+    if speed == 1: time.sleep(0.2)
